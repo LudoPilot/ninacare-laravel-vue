@@ -13,6 +13,16 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory(1000000)->create();
+		$chunkSize = 1000;
+		$totalUsers = 1000000;
+
+		for ($i = 0; $i < $totalUsers; $i += $chunkSize) {
+			\App\Models\User::factory()
+				->count($chunkSize)
+				->create()
+				->each(function ($user) {
+					$user->address()->save(\App\Models\Address::factory()->make());
+				});
+		}
     }
 }
