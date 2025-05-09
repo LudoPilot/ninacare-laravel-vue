@@ -15,6 +15,17 @@ class AddressSeeder extends Seeder
      */
     public function run(): void
     {
-		Address::factory()->count(10000)->create();
+        $chunkSize = 100;
+        $total = 10000;
+
+        for ($i = 0; $i < $total; $i += $chunkSize) {
+            $addressData = Address::factory($chunkSize)
+                ->make()
+                ->map(fn ($address) => $address->toArray())
+                ->toArray();
+
+            Address::insert($addressData);
+            //unset($addressData);
+        }
     }
 }
