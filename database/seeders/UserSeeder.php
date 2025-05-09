@@ -28,6 +28,21 @@ class UserSeeder extends Seeder
 
 		$password = bcrypt('password'); // we hash the password only once
 	
+
+		// Create an admin account	
+		// Login = admin@fakemail.com	|	Password = password 
+	    User::create([
+			'first_name'        => 'Admin',
+			'last_name'         => 'User',
+			'email'             => 'admin@fakemail.com',
+			'password'          => $password,
+			'address_id'        => fake()->randomElement($addressIds),
+			'email_verified_at' => now(),
+			'remember_token'    => Str::random(10),
+			'created_at'        => now(),
+			'updated_at'        => now(),
+		]);
+
 		for ($i = 0; $i < $totalUsers; $i += $userChunk * $superChunk) {
 
 			$userData = [];
