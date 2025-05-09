@@ -20,7 +20,7 @@ class UserController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        return Inertia::render('Dashboard', [
+        return Inertia::render('Users/Index', [
             'users' => $users,
             'filters' => $request->only('search'),
         ]);
