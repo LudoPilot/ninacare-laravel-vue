@@ -3,8 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Address;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
 {
@@ -13,16 +15,43 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-		$chunkSize = 1000;
-		$totalUsers = 1000000;
+		$userChunk = 1000;
+		$superChunk = 10;
+        $totalUsers = 10_000_000;
 
-		for ($i = 0; $i < $totalUsers; $i += $chunkSize) {
-			\App\Models\User::factory()
-				->count($chunkSize)
-				->create()
-				->each(function ($user) {
-					$user->address()->save(\App\Models\Address::factory()->make());
-				});
+		$addressIds = Address::pluck('id')->toArray(); // tempo
+
+
+		$bar = $this->command->getOutput()->createProgressBar($totalUsers);
+		$bar->start();
+		$this->command->getOutput()->getOutput()->write("\n");
+
+		$password = bcrypt('password'); // we hash the password only once
+	
+		for ($i = 0; $i < $totalUsers; $i += $userChunk * $superChunk) {
+
+			$userData = [];
+
+			for ($j = 0; $j < $superChunk; $j++) {
+                $userData[] = [
+                    'first_name'        => fake()->firstName(),
+                    'last_name'         => fake()->lastName(),
+                    'email'             => 'user_' . uniqid() . '@fakemail.com',
+                    'password'          => $password,
+                    'address_id'        => fake()->randomElement($addressIds),
+                    'email_verified_at' => now(),
+                    'remember_token'    => Str::random(10),
+                    'created_at'        => now(),
+                    'updated_at'        => now(),
+                ];				
+			}
+
+			User::insert($userData);
+			$bar->advance($userChunk * $superChunk);
+			unset($userData);
 		}
+
+		$bar->finish();
+    	$this->command->info("\n✔ Users seeding complete!");
     }
 }
