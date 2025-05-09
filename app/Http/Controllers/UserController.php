@@ -25,4 +25,11 @@ class UserController extends Controller
             'filters' => $request->only('search'),
         ]);
     }
+
+	public function show(User $user) {
+
+		return Inertia::render('Users/Show', [
+			'user' => $user,
+		]);
+	}
 }
