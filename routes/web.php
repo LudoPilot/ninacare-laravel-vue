@@ -26,14 +26,13 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth'])->get('/users', [UserController::class, 'index'])->name('users.index');
-Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
 
 require __DIR__.'/auth.php';
 
 // TODO: restrict these routes to admins.
 Route::middleware(['auth'])->group(function () {
     Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
-    Route::get('/users/{user}/edit', [UserController::class, 'editByAdmin'])->name('users.edit');
+    Route::get('/users/{user}/edit-by-admin', [UserController::class, 'editByAdmin'])->name('users.edit-by-admin');
     Route::put('/users/{user}', [UserController::class, 'updateByAdmin'])->name('users.update');
     Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
