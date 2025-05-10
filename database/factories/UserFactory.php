@@ -2,16 +2,19 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use App\Models\Address;
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
  */
 class UserFactory extends Factory
 {
+    protected $model = User::class;
+
     /**
      * The current password being used by the factory.
      */
@@ -27,7 +30,7 @@ class UserFactory extends Factory
         return [
             'first_name' => fake()->firstName(),
 			'last_name' => fake()->lastName(),
-            'email' => fake()->unique()->safeEmail(),
+            'email' => 'user_' . uniqid() . '@fakemail.com',
 			//'email' => $this->faker->unique()->userName() . rand(100000, 999999) . '@fakemail.com',	// add 6-digit suffix in the address
             'email_verified_at' => now(),
             //'password' => static::$password ??= Hash::make('password'),
