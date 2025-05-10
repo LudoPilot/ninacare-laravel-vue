@@ -11,7 +11,7 @@ import { Head } from '@inertiajs/vue3';
             <h2
                 class="text-xl font-semibold leading-tight text-gray-800"
             >
-                Dashboard
+                User Dashboard
             </h2>
         </template>
 
@@ -21,7 +21,7 @@ import { Head } from '@inertiajs/vue3';
                     class="overflow-hidden bg-white shadow-sm sm:rounded-lg"
                 >
                     <div class="p-6 text-gray-900">
-                        You're logged in!
+                        You're logged in! Welcome to your personal dashboard!
                     </div>
                 </div>
             </div>

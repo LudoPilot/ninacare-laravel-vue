@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
-import AuthenticatedNavbar from '@/Components/AuthenticatedNavbar.vue'
+import Navbar from '@/Components/Navbar.vue'
 
 </script>
 
@@ -8,7 +8,7 @@ import AuthenticatedNavbar from '@/Components/AuthenticatedNavbar.vue'
 	<Head title="About" />
 
 	<!-- Navbar -->
-	<AuthenticatedNavbar />
+	<Navbar />
 
 	<!-- Page content -->
 	<main class="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col">

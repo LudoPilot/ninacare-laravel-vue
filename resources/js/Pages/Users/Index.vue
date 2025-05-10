@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue';
 import { router, usePage } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import AuthenticatedNavbar from '@/Components/AuthenticatedNavbar.vue';
+import AuthenticatedNavbar from '@/Components/Navbar.vue';
 
 const props = defineProps<{
 	users: { data: any[]; links: Array<{ label: string; url: string | null; active: boolean }> };

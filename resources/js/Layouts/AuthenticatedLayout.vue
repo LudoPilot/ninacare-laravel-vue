@@ -6,7 +6,7 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
-import AuthenticatedNavbar from '@/Components/AuthenticatedNavbar.vue'
+import Navbar from '@/Components/Navbar.vue'
 
 const showingNavigationDropdown = ref(false);
 </script>
@@ -15,7 +15,7 @@ const showingNavigationDropdown = ref(false);
     <div>
         <div class="min-h-screen bg-gray-100">
 			<!-- Navbar -->
-			<AuthenticatedNavbar />
+			<Navbar />
 
             <!-- Page Heading -->
             <header

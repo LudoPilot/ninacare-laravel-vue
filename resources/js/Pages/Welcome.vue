@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head, Link, usePage } from '@inertiajs/vue3';
-import AuthenticatedNavbar from '@/Components/AuthenticatedNavbar.vue';
+import Navbar from '@/Components/Navbar.vue';
 
 defineProps<{
     canLogin?: boolean;
@@ -26,7 +26,7 @@ function handleImageError() {
     <div class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex flex-col">
 
         <!-- Navbar -->
-		<AuthenticatedNavbar />
+		<Navbar />
 
         <!-- Main content -->
         <main class="flex-grow flex flex-col justify-center items-center text-center px-4">

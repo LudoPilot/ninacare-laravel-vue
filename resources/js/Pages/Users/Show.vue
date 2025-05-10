@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import AuthenticatedNavbar from '@/Components/AuthenticatedNavbar.vue'
+import AuthenticatedNavbar from '@/Components/Navbar.vue'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 const props = defineProps<{
