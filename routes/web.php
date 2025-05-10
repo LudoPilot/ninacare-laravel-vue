@@ -29,9 +29,15 @@ Route::middleware(['auth'])->get('/users', [UserController::class, 'index'])->na
 
 require __DIR__.'/auth.php';
 
-// TODO: restrict these routes to admins.
+
+// For every logged user
 Route::middleware(['auth'])->group(function () {
     Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+});
+
+
+// Restricted to admins
+Route::middleware(['auth', 'isAdmin'])->group(function () {
     Route::get('/users/{user}/edit-by-admin', [UserController::class, 'editByAdmin'])->name('users.edit-by-admin');
     Route::put('/users/{user}', [UserController::class, 'updateByAdmin'])->name('users.update');
     Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
