@@ -24,7 +24,7 @@ const showingNavigationDropdown = ref(false);
 				</div>
 
 				<!-- Desktop links (only when authenticated) -->
-				<div v-if="user" class="hidden sm:flex sm:items-center sm:space-x-4">
+				<div class="hidden sm:flex sm:items-center sm:space-x-4">
 					<Link href="/"
 						class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 hover:text-gray-900">
 					Home
@@ -33,6 +33,9 @@ const showingNavigationDropdown = ref(false);
 						class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 hover:text-gray-900">
 					About
 					</Link>
+				</div>
+				<div v-if="user" class="hidden sm:flex sm:items-center sm:space-x-4">
+
 					<Link :href="route('dashboard')"
 						class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 hover:text-gray-900">
 					Dashboard
