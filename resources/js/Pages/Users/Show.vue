@@ -24,7 +24,7 @@ const props = defineProps<{
             <div class="space-x-2">
                 <!-- ✅ Bouton Retour -->
                 <Link
-                    href="/users"
+    				:href="route('users.index')"
                     class="inline-block px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
                 >
                     Back to List
@@ -32,7 +32,7 @@ const props = defineProps<{
 
                 <!-- ✅ Bouton Modifier -->
                 <Link
-                    :href="`/users/${user.id}/edit`"
+                    :href="route('users.edit-by-admin', user.id)"
                     class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                 >
                     Edit User

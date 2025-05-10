@@ -35,7 +35,7 @@ class UserController extends Controller
 	}
 
     public function editByAdmin(User $user) {
-        return Inertia::render('Users/Edit', ['user' => $user]);
+        return Inertia::render('Users/EditByAdmin', ['user' => $user]);
     }
 
 	public function updateByAdmin(Request $request, User $user)
