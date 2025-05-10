@@ -52,4 +52,21 @@ class User extends Authenticatable
     	return $this->belongsTo(Address::class);
 	}
 
+    /**
+     * Relation with roles (many-to-many)
+     */
+	public function roles() {
+		return $this->belongsToMany(Role::class);
+	}
+
+	/**
+     * Check if the user has a specific role
+     *
+     * @param string $roleName
+     * @return bool
+     */
+    public function hasRole(string $roleName): bool
+    {
+        return $this->roles()->where('name', $roleName)->exists();
+    }
 }
