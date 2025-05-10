@@ -26,11 +26,14 @@ class UserController extends Controller
         ]);
     }
 
-	public function show(User $user) {
+	public function show(Request $request, User $user) {
+		$authUser = $request->user();
+
 		$user->load('address');
 
 		return Inertia::render('Users/Show', [
 			'user' => $user,
+    		'isAdmin' => $authUser?->hasRole('ADMIN') ?? false,
 		]);
 	}
 

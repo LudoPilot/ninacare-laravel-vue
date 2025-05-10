@@ -14,6 +14,7 @@ const props = defineProps<{
             street: string;
         };
     };
+	isAdmin: boolean;
 }>();
 </script>
 
@@ -30,8 +31,9 @@ const props = defineProps<{
                     Back to List
                 </Link>
 
-                <!-- ✅ Bouton Modifier -->
+                <!-- Edit button -->
                 <Link
+				    v-if="props.isAdmin"
                     :href="route('users.edit-by-admin', user.id)"
                     class="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                 >
