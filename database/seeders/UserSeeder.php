@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
 		$userChunk = 1000;
-		$superChunk = 10;
+		$superChunk = 1000;
         $totalUsers = 1_000_000;
 
 		$addressIds = Address::pluck('id')->toArray(); // tempo
@@ -55,50 +55,36 @@ class UserSeeder extends Seeder
 
 		$lastInsertedId = User::max('id');
 
-		for ($i = 0; $i < $totalUsers; $i += $userChunk * $superChunk) {
+        for ($i = 0; $i < $totalUsers; $i += $userChunk * $superChunk) {
+            for ($j = 0; $j < $superChunk && ($i + $j * $userChunk) < $totalUsers; $j++) {
+                $userData = [];
 
-			$userData = [];
+                for ($k = 0; $k < $userChunk; $k++) {
+                    $userData[] = [
+                        'first_name' => fake()->firstName(),
+                        'last_name' => fake()->lastName(),
+                        'email' => 'user_' . uniqid() . '@fakemail.com',
+                        'password' => $password,
+                        'address_id' => fake()->randomElement($addressIds),
+                        'email_verified_at' => now(),
+                        'remember_token' => Str::random(10),
+                    ];
+                }
 
-			for ($j = 0; $j < $superChunk; $j++) {
-                $userData[] = [
-                    'first_name'        => fake()->firstName(),
-                    'last_name'         => fake()->lastName(),
-                    'email'             => 'user_' . uniqid() . '@fakemail.com',
-                    'password'          => $password,
-                    'address_id'        => fake()->randomElement($addressIds),
-                    'email_verified_at' => now(),
-                    'remember_token'    => Str::random(10),
-                    'created_at'        => now(),
-                    'updated_at'        => now(),
-                ];				
-			}
+                User::insert($userData);
+                $bar->advance($userChunk);
+            }
 
-			User::insert($userData);
-            // $lastUsers = User::orderBy('id', 'desc')->take($userChunk * $superChunk)->pluck('id');
-            // $roleUserData = $lastUsers->map(fn($userId) => [
-            //     'user_id' => $userId,
-            //     'role_id' => $userRoleId,
-            // ])->toArray();
-            // DB::table('role_user')->insert($roleUserData);
+            // Get the IDs
+            $newUsers = User::where('id', '>', $lastInsertedId)->pluck('id');
+            $roleUserData = $newUsers->map(fn($userId) => [
+                'user_id' => $userId,
+                'role_id' => $userRoleId,
+            ])->toArray();
 
-			// Juste après avoir inséré : récupérer les nouveaux IDs
-			$newUsers = User::where('id', '>', $lastInsertedId)->pluck('id');
-
-			// Préparer les relations
-			$roleUserData = $newUsers->map(fn($userId) => [
-				'user_id' => $userId,
-				'role_id' => $userRoleId,
-			])->toArray();
-
-			// Insérer en masse
-			DB::table('role_user')->insert($roleUserData);
-
-			// Mettre à jour le dernier ID inséré
-			$lastInsertedId = User::max('id');
-
-            $bar->advance($userChunk * $superChunk);
-            unset($userData, $lastUsers, $roleUserData);
-		}
+            DB::table('role_user')->insert($roleUserData);
+            $lastInsertedId = User::max('id');
+        }
 
 		$bar->finish();
     	$this->command->info("\n✔ Users seeding complete!");
