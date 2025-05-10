@@ -19,7 +19,7 @@ class UserSeeder extends Seeder
     {
 		$userChunk = 1000;
 		$superChunk = 10;
-        $totalUsers = 10_000_000;
+        $totalUsers = 1_000_000;
 
 		$addressIds = Address::pluck('id')->toArray(); // tempo
 
@@ -54,7 +54,7 @@ class UserSeeder extends Seeder
 		$userRoleId = Role::firstOrCreate(['role_name' => Role::USER])->id;
 
 		$lastInsertedId = User::max('id');
-		
+
 		for ($i = 0; $i < $totalUsers; $i += $userChunk * $superChunk) {
 
 			$userData = [];
