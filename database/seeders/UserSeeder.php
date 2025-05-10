@@ -2,11 +2,13 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use App\Models\User;
 use App\Models\Address;
-use Illuminate\Database\Seeder;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Support\Str;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class UserSeeder extends Seeder
 {
@@ -31,7 +33,7 @@ class UserSeeder extends Seeder
 
 		// Create an admin account	
 		// Login = admin@fakemail.com	|	Password = password 
-	    User::create([
+	    $admin = User::create([
 			'first_name'        => 'Admin',
 			'last_name'         => 'User',
 			'email'             => 'admin@fakemail.com',
@@ -43,6 +45,16 @@ class UserSeeder extends Seeder
 			'updated_at'        => now(),
 		]);
 
+		// Attach the role ADMIN
+		$adminRoleId = Role::firstOrCreate(['role_name' => Role::ADMIN])->id;
+		$admin->roles()->attach($adminRoleId);
+
+
+		//$userRoleId = Role::where('role_name', Role::USER)->firstOrFail()->id;
+		$userRoleId = Role::firstOrCreate(['role_name' => Role::USER])->id;
+
+		$lastInsertedId = User::max('id');
+		
 		for ($i = 0; $i < $totalUsers; $i += $userChunk * $superChunk) {
 
 			$userData = [];
@@ -62,8 +74,30 @@ class UserSeeder extends Seeder
 			}
 
 			User::insert($userData);
-			$bar->advance($userChunk * $superChunk);
-			unset($userData);
+            // $lastUsers = User::orderBy('id', 'desc')->take($userChunk * $superChunk)->pluck('id');
+            // $roleUserData = $lastUsers->map(fn($userId) => [
+            //     'user_id' => $userId,
+            //     'role_id' => $userRoleId,
+            // ])->toArray();
+            // DB::table('role_user')->insert($roleUserData);
+
+			// Juste après avoir inséré : récupérer les nouveaux IDs
+			$newUsers = User::where('id', '>', $lastInsertedId)->pluck('id');
+
+			// Préparer les relations
+			$roleUserData = $newUsers->map(fn($userId) => [
+				'user_id' => $userId,
+				'role_id' => $userRoleId,
+			])->toArray();
+
+			// Insérer en masse
+			DB::table('role_user')->insert($roleUserData);
+
+			// Mettre à jour le dernier ID inséré
+			$lastInsertedId = User::max('id');
+
+            $bar->advance($userChunk * $superChunk);
+            unset($userData, $lastUsers, $roleUserData);
 		}
 
 		$bar->finish();
