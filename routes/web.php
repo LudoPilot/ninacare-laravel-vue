@@ -1,6 +1,7 @@
 <?php
 
 use Inertia\Inertia;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\UserController;
@@ -46,4 +47,12 @@ Route::middleware(['auth', 'isAdmin'])->group(function () {
     Route::put('/users/{user}', [UserController::class, 'updateByAdmin'])->name('users.update');
     Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+});
+
+
+// 404 errors
+Route::fallback(function (Request $request) {
+    return Inertia::render('Errors/404')
+        ->toResponse($request)
+        ->setStatusCode(404);
 });
