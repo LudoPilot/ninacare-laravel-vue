@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
+import AuthenticatedNavbar from '@/Components/AuthenticatedNavbar.vue';
 
 defineProps<{
     canLogin?: boolean;
@@ -7,6 +8,10 @@ defineProps<{
     laravelVersion: string;
     phpVersion: string;
 }>();
+
+const page = usePage<{ auth: { user: any } }>() as ReturnType<typeof usePage> & { props: { auth: { user: any } } };
+const user = page.props.auth.user;
+
 
 function handleImageError() {
     document.getElementById('screenshot-container')?.classList.add('!hidden');
@@ -21,32 +26,7 @@ function handleImageError() {
     <div class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex flex-col">
 
         <!-- Navbar -->
-        <nav class="flex justify-end items-center p-6">
-            <div v-if="canLogin" class="space-x-4">
-                <Link
-                    v-if="$page.props.auth.user"
-                    :href="route('dashboard')"
-                    class="text-sm font-medium text-gray-700 dark:text-gray-200 hover:underline"
-                >
-                    Dashboard
-                </Link>
-                <template v-else>
-                    <Link
-                        :href="route('login')"
-                        class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 transition"
-                    >
-                        Login
-                    </Link>
-                    <Link
-                        v-if="canRegister"
-                        :href="route('register')"
-                        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-                    >
-                        Register
-                    </Link>
-                </template>
-            </div>
-        </nav>
+		<AuthenticatedNavbar />
 
         <!-- Main content -->
         <main class="flex-grow flex flex-col justify-center items-center text-center px-4">
@@ -60,7 +40,7 @@ function handleImageError() {
                 Manage and explore millions of users with a fast and modern interface.
             </p>
 
-            <div class="space-x-4">
+            <div class="space-x-4" v-if="!user">
                 <Link
                     v-if="canLogin"
                     :href="route('login')"

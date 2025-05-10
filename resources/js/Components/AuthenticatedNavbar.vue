@@ -23,11 +23,15 @@ const showingNavigationDropdown = ref(false);
 					</Link>
 				</div>
 
-				<!-- Liens desktop -->
-				<div class="hidden sm:flex sm:items-center sm:space-x-4">
+				<!-- Desktop links (only when authenticated) -->
+				<div v-if="user" class="hidden sm:flex sm:items-center sm:space-x-4">
 					<Link href="/"
 						class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 hover:text-gray-900">
 					Home
+					</Link>
+					<Link :href="route('about')"
+						class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 hover:text-gray-900">
+					About
 					</Link>
 					<Link :href="route('dashboard')"
 						class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 hover:text-gray-900">
@@ -35,28 +39,26 @@ const showingNavigationDropdown = ref(false);
 					</Link>
 					<Link :href="route('users.index')"
 						class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 hover:text-gray-900">
-					Find users
+					Find Users
 					</Link>
-
 					<Link :href="route('profile.edit')"
 						class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 hover:text-gray-900">
 					Profile
 					</Link>
 				</div>
 
-				<!-- Profile + Logout button -->
-				<div class="hidden sm:flex sm:items-center sm:space-x-4">
+				<!-- Profile + Logout (when authenticated) -->
+				<div v-if="user" class="hidden sm:flex sm:items-center sm:space-x-4">
 					<span class="text-gray-700">
 						Welcome, {{ user.first_name }} {{ user.last_name }}
 					</span>
-
 					<Link :href="route('logout')" method="post" as="button"
 						class="inline-flex items-center px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
 					Logout
 					</Link>
 				</div>
 
-				<!-- Hamburger menu -->
+				<!-- Hamburger (toggle)  -->
 				<div class="-mr-2 flex items-center sm:hidden">
 					<button @click="showingNavigationDropdown = !showingNavigationDropdown"
 						class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none">
@@ -75,38 +77,34 @@ const showingNavigationDropdown = ref(false);
 			</div>
 		</div>
 
-		<!-- Menu (mobile version) -->
+		<!-- Mobile menu -->
 		<div v-show="showingNavigationDropdown" class="sm:hidden border-t border-gray-200">
 			<div class="pt-2 pb-3 space-y-1">
 				<Link href="/"
 					class="block pl-3 pr-4 py-2 border-l-4 border-indigo-500 bg-indigo-50 text-indigo-700 text-base font-medium">
 				Home
 				</Link>
-				<Link :href="route('dashboard')"
+				<Link v-if="user" :href="route('dashboard')"
 					class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 text-base font-medium">
 				Dashboard
 				</Link>
-				<Link :href="route('users.index')"
+				<Link v-if="user" :href="route('users.index')"
 					class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 text-base font-medium">
-				Find users
+				Find Users
 				</Link>
-				<Link :href="route('profile.edit')"
+				<Link v-if="user" :href="route('profile.edit')"
 					class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 text-base font-medium">
 				Profile
 				</Link>
-				<Link :href="route('logout')" method="post" as="button"
+				<Link v-if="user" :href="route('logout')" method="post" as="button"
 					class="block w-full text-left pl-3 pr-4 py-2 border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 text-base font-medium">
 				Logout
 				</Link>
 			</div>
-			<div class="pt-4 pb-1 border-t border-gray-200">
+			<div v-if="user" class="pt-4 pb-1 border-t border-gray-200">
 				<div class="px-4">
-					<div class="font-medium text-base text-gray-800">
-						{{ user.first_name }} {{ user.last_name }}
-					</div>
-					<div class="text-sm text-gray-500">
-						{{ user.email }}
-					</div>
+					<div class="font-medium text-base text-gray-800">{{ user.first_name }} {{ user.last_name }}</div>
+					<div class="text-sm text-gray-500">{{ user.email }}</div>
 				</div>
 			</div>
 		</div>
