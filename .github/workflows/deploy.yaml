@@ -36,7 +36,7 @@ jobs:
           script: |
             set -e
             cd /var/www/ninacare-laravel-vue
-            docker-compose -f docker-compose.prod.yaml down
-            docker-compose -f docker-compose.prod.yaml pull
-            docker-compose -f docker-compose.prod.yaml up -d --remove-orphans
+            docker compose -f docker-compose.prod.yaml down
+            docker compose -f docker-compose.prod.yaml pull
+            docker compose -f docker-compose.prod.yaml up -d --remove-orphans
             docker image prune -af --filter "until=24h"
