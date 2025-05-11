@@ -35,7 +35,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
           script: |
-            cd /chemin/vers/ton/projet
+            cd /var/www/ninacare-laravel-vue
             docker-compose -f docker-compose.prod.yaml pull
             docker-compose -f docker-compose.prod.yaml up -d
             docker image prune -f
