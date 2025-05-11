@@ -1,6 +1,6 @@
 services:
   app:
-    image: ${{ secrets.DOCKERHUB_USERNAME }}/ninacare-laravel-vue:latest
+    image: ${APP_IMAGE}
     container_name: laravel_app
     restart: always
     environment:
