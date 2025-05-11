@@ -35,5 +35,6 @@ RUN addgroup -g 1000 www && adduser -u 1000 -G www -s /bin/sh -D www \
 
 USER www
 
-EXPOSE 9000
+#EXPOSE 9000
+EXPOSE 80
 CMD ["php-fpm"]
