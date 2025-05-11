@@ -33,8 +33,6 @@ COPY --from=node-builder /app /var/www
 RUN addgroup -g 1000 www && adduser -u 1000 -G www -s /bin/sh -D www \
  && chown -R www:www /var/www
 
-USER www
-
 #EXPOSE 9000
 EXPOSE 80
 CMD ["php-fpm"]
