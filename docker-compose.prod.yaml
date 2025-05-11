@@ -1,6 +1,6 @@
 services:
   app:
-    image: mon-registry/mon-app:${TAG:-latest}
+    image: ${{ secrets.DOCKERHUB_USERNAME }}/ninacare-laravel-vue:latest
     container_name: laravel_app
     restart: always
     environment:
