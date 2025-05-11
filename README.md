@@ -53,13 +53,13 @@ npm install
 
 ### Configure environment
 Create an .env environment file. DO NOT COMMIT THIS FILE! 
-Edit the following variables.
+Edit the following variables. The following values are given as examples.
 ```bash
-DB_HOST=
-DB_PORT=
-DB_DATABASE=
-DB_USERNAME=
-DB_PASSWORD=
+DB_HOST=db	# same as container_name in docker-compose.yaml
+DB_PORT=3306
+DB_DATABASE=laravel_db
+DB_USERNAME=laravel
+DB_PASSWORD=secret
 ```
 
 Generate an application key if necessary.
@@ -92,4 +92,39 @@ npm run dev
 OR 
 ```bash
 composer run dev
+```
+
+
+# Run the application with Docker
+## Prerequisites
+Docker must be installed on your machine.
+If you are on Windows, you must have WSL2 and Docker Desktop.
+
+## Launch Docker.
+Launch Docker Desktop. Open a terminal and go to the project folder.
+```bash
+docker-compose up -d
+```
+This process can take several minutes the first time because Docker has to build the image.
+
+Wait a few seconds and launch migrations.
+```bash
+docker logs laravel_db
+```
+
+```bash
+docker exec -it laravel_app php artisan migrate
+```
+
+
+Seed the database.
+```bash
+docker exec -it laravel_app php artisan db:seed
+```
+Here, `laravel_app` is the name of the container (defined in docker-compose.yaml).
+
+## Useful tip: empty the cache if necessary.
+```bash
+docker exec -it laravel_app php artisan config:clear
+docker exec -it laravel_app php artisan cache:clear
 ```
