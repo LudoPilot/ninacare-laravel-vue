@@ -24,7 +24,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker buildx build --pull --no-cache --platform linux/amd64 -t ${{ secrets.DOCKERHUB_USERNAME }}/ninacare-laravel-vue:latest --push .
+          docker buildx build --pull --no-cache --platform linux/amd64 -t ${{ secrets.APP_IMAGE }} --push .
 
       - name: Ensure target directory exists on VPS
         uses: appleboy/ssh-action@v0.1.7
@@ -43,8 +43,42 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
-          source: "docker-compose.prod.yaml,nginx.prod.conf, .env.prod"
+          source: "docker-compose.prod.yaml,nginx.prod.conf"
           target: "/var/www/ninacare-laravel-vue"
+
+      - name: Generate .env on VPS from secrets
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: 22
+          script: |
+            cat <<EOF > /var/www/ninacare-laravel-vue/.env
+            APP_NAME=Laravel
+            APP_ENV=production
+            APP_KEY=${{ secrets.APP_KEY }}
+            APP_DEBUG=false
+            APP_URL=${{ secrets.APP_URL }}
+            APP_IMAGE=${{ secrets.APP_IMAGE }}
+            DB_CONNECTION=mysql
+            DB_HOST=db
+            DB_PORT=3306
+            DB_DATABASE=${{ secrets.DB_DATABASE }}
+            DB_USERNAME=${{ secrets.DB_USERNAME }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
+            SESSION_DRIVER=database
+            SESSION_LIFETIME=120
+            SESSION_ENCRYPT=false
+            SESSION_PATH=/
+            SESSION_DOMAIN=${{ secrets.APP_URL }}
+            CACHE_STORE=database
+            QUEUE_CONNECTION=database
+            BROADCAST_CONNECTION=log
+            FILESYSTEM_DISK=local
+            MAIL_MAILER=log
+            EOF
 
       - name: Deploy on VPS via SSH
         uses: appleboy/ssh-action@v0.1.7
@@ -56,6 +90,7 @@ jobs:
           script: |
             set -e
             cd /var/www/ninacare-laravel-vue
+            docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
             docker compose -f docker-compose.prod.yaml down
             docker compose -f docker-compose.prod.yaml pull
             docker compose -f docker-compose.prod.yaml up -d --remove-orphans
