@@ -8,85 +8,76 @@ use App\Models\Address;
 use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
-    {
-		$userChunk = 1000;
-		$superChunk = 1000;
-        $totalUsers = 1_000_000;
+	/**
+	 * Run the database seeds.
+	 */
+	public function run(): void
+	{
+		$totalUsers = 1_000_000;
+		$batchSize = 5000; 
+		$password = bcrypt('password');
+		$rememberToken = Str::random(10);
+		$addressIds = Address::pluck('id')->toArray();
 
-		$addressIds = Address::pluck('id')->toArray(); // tempo
+		$admin = User::create([
+			'first_name' => 'Admin',
+			'last_name' => 'User',
+			'email' => 'admin@fakemail.com',
+			'password' => $password,
+			'address_id' => fake()->randomElement($addressIds),
+			'email_verified_at' => now(),
+			'remember_token' => $rememberToken,
+		]);
 
+		$adminRoleId = Role::firstOrCreate(['role_name' => Role::ADMIN])->id;
+		$admin->roles()->attach($adminRoleId);
+
+		$userRoleId = Role::firstOrCreate(['role_name' => Role::USER])->id;
 
 		$bar = $this->command->getOutput()->createProgressBar($totalUsers);
 		$bar->start();
 		$this->command->getOutput()->getOutput()->write("\n");
 
-		$password = bcrypt('password'); // we hash the password only once
-	
+		$nextId = 2;
 
-		// Create an admin account	
-		// Login = admin@fakemail.com	|	Password = password 
-	    $admin = User::create([
-			'first_name'        => 'Admin',
-			'last_name'         => 'User',
-			'email'             => 'admin@fakemail.com',
-			'password'          => $password,
-			'address_id'        => fake()->randomElement($addressIds),
-			'email_verified_at' => now(),
-			'remember_token'    => Str::random(10),
-			'created_at'        => now(),
-			'updated_at'        => now(),
-		]);
+		for ($i = 1; $i <= $totalUsers; $i += $batchSize) {
+			$users   = [];
+			$pivots  = [];
 
-		// Attach the role ADMIN
-		$adminRoleId = Role::firstOrCreate(['role_name' => Role::ADMIN])->id;
-		$admin->roles()->attach($adminRoleId);
+			for ($j = 0; $j < $batchSize && ($i + $j) <= $totalUsers; $j++) {
+				$users[] = [
+					'id'                => $nextId + $j,
+					'first_name'        => fake()->firstName(),
+					'last_name'         => fake()->lastName(),
+					'email'             => "user_" . ($i + $j) . "@fakemail.com",
+					'password'          => $password,
+					'address_id'        => fake()->randomElement($addressIds),
+					'email_verified_at' => now(),
+					'remember_token'    => Str::random(10),
+					'created_at'        => now(),
+					'updated_at'        => now(),
+				];
 
+				$pivots[] = [
+					'user_id' => $nextId + $j,
+					'role_id' => $userRoleId,
+				];
+			}
 
-		//$userRoleId = Role::where('role_name', Role::USER)->firstOrFail()->id;
-		$userRoleId = Role::firstOrCreate(['role_name' => Role::USER])->id;
+			// on insère en bulk
+			DB::table('users')->insert($users);
+			DB::table('role_user')->insert($pivots);
 
-		$lastInsertedId = User::max('id');
+			// on met à jour l’ID de départ pour la batch suivante
+			$nextId += count($users);
 
-        for ($i = 0; $i < $totalUsers; $i += $userChunk * $superChunk) {
-            for ($j = 0; $j < $superChunk && ($i + $j * $userChunk) < $totalUsers; $j++) {
-                $userData = [];
-
-                for ($k = 0; $k < $userChunk; $k++) {
-                    $userData[] = [
-                        'first_name' => fake()->firstName(),
-                        'last_name' => fake()->lastName(),
-                        'email' => 'user_' . uniqid() . '@fakemail.com',
-                        'password' => $password,
-                        'address_id' => fake()->randomElement($addressIds),
-                        'email_verified_at' => now(),
-                        'remember_token' => Str::random(10),
-                    ];
-                }
-
-                User::insert($userData);
-                $bar->advance($userChunk);
-            }
-
-            // Get the IDs
-            $newUsers = User::where('id', '>', $lastInsertedId)->pluck('id');
-            $roleUserData = $newUsers->map(fn($userId) => [
-                'user_id' => $userId,
-                'role_id' => $userRoleId,
-            ])->toArray();
-
-            DB::table('role_user')->insert($roleUserData);
-            $lastInsertedId = User::max('id');
-        }
+			$bar->advance(count($users));
+		}
 
 		$bar->finish();
-    	$this->command->info("\n✔ Users seeding complete!");
-    }
+		$this->command->info("\n✔ Users seeding complete!");
+	}
 }
